@@ -1,62 +1,54 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="color-scheme" content="light dark">
-<title>한글 연습장 — Hangul Drill</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap">
+<title>ひらがな練習帳 — Hiragana Drill</title>
 
 <script>
 /* Runs before the page paints so switching themes never flashes the old one.
    The theme is a property of this screen, not of your progress, so it lives
-   in browser storage rather than in progress.json.
-   If the page is hosted inside a viewer that already set a theme, "auto"
-   follows that instead of the OS. */
+   in browser storage rather than in progress.json. */
 (function(){
   var pref = "auto";
-  try{ pref = localStorage.getItem("hangul-theme") || "auto"; }catch(e){}
-  var host = document.documentElement.getAttribute("data-theme");
-  window.__hostTheme = host;
-  var dark = pref === "dark" || (pref === "auto" && (host ? host === "dark" :
-    window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches));
+  try{ pref = localStorage.getItem("hiragana-theme") || "auto"; }catch(e){}
+  var dark = pref === "dark" || (pref === "auto" &&
+    window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
   document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
 })();
 </script>
 
 <style>
-  /* Daylight: 원고지, Korean manuscript paper, ruled in indigo (쪽빛).
-     The teacher's red pen stays red: a correct answer gets a 동그라미. */
+  /* Daylight: green rules printed on manuscript paper. */
   :root, [data-theme="light"]{
-    --paper:      #E8EAEE;
-    --cell:       #F2F3F6;
+    --paper:      #E9EBE2;
+    --cell:       #F2F4EC;
     --cell-wrong: #F7EDEA;
-    --ink:        #1C2230;
-    --ink-soft:   #5A6272;
-    --rule:       #2F5A8A;
-    --rule-faint: #AEBFD3;
+    --ink:        #1E2620;
+    --ink-soft:   #5B6560;
+    --rule:       #437056;
+    --rule-faint: #AFC3B4;
     --shu:        #C2402A;
     --shu-soft:   #E0BDB4;
-    --on-rule:    #F2F3F6;
+    --on-rule:    #F2F4EC;
   }
 
-  /* Lamplight: not an inversion. The indigo lifts to stay readable on a dark
-     ground, and the correction red moves toward coral. The cell stays lighter
-     than the page either way, because the cell is the surface you write on. */
+  /* Lamplight: not an inversion. The greens lift to stay readable on a dark
+     ground, and the correction red moves toward coral — true vermilion goes
+     muddy down here. The cell stays lighter than the page either way, because
+     the cell is the surface you write on. */
   [data-theme="dark"]{
-    --paper:      #141821;
-    --cell:       #1C2230;
-    --cell-wrong: #2B1F1E;
-    --ink:        #E3E7EF;
-    --ink-soft:   #8C95A6;
-    --rule:       #7FA3D6;
-    --rule-faint: #343E52;
+    --paper:      #151A17;
+    --cell:       #1E2521;
+    --cell-wrong: #2B1F1B;
+    --ink:        #E4E8DE;
+    --ink-soft:   #8D9992;
+    --rule:       #6FA588;
+    --rule-faint: #3A473F;
     --shu:        #E8705A;
     --shu-soft:   #6B3227;
-    --on-rule:    #10141C;
-    color-scheme: dark;
+    --on-rule:    #12170F;
   }
 
   *{ box-sizing:border-box; }
@@ -86,7 +78,7 @@
     padding-bottom:8px;
   }
   .masthead .title{
-    font-family:"Noto Serif KR","AppleMyungjo","Batang","바탕",serif;
+    font-family:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"Noto Serif JP","MS Mincho",serif;
     font-size:17px; letter-spacing:.14em; color:var(--rule);
   }
   .eyebrow{
@@ -98,7 +90,7 @@
   .today{ display:flex; flex-direction:column; gap:6px; margin-top:-10px; }
   .today-head{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; }
   .today-head .jp{
-    font-family:"Noto Serif KR","AppleMyungjo","Batang","바탕",serif;
+    font-family:"Hiragino Mincho ProN","Yu Mincho",YuMincho,serif;
     font-size:13px; letter-spacing:.1em; color:var(--ink-soft);
   }
   .today-head .num{
@@ -137,7 +129,7 @@
     position:relative; width:27px; height:27px; overflow:hidden;
     border:1px solid var(--rule-faint); background:var(--cell);
     display:grid; place-items:center;
-    font-family:"Noto Serif KR","AppleMyungjo","Batang","바탕",serif;
+    font-family:"Hiragino Mincho ProN","Yu Mincho",YuMincho,serif;
     font-size:12px; color:var(--ink-soft);
   }
   .wk i{
@@ -171,23 +163,12 @@
   .cell::before{ left:50%; top:6%; bottom:6%; width:1px; }
   .cell::after{ top:50%; left:6%; right:6%; height:1px; }
 
-  .glyph{
+  .kana{
     position:relative; z-index:2;
-    font-family:"Noto Serif KR","AppleMyungjo","Batang","바탕",serif;
+    font-family:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"Noto Serif JP","MS Mincho",serif;
     font-size:min(150px, 36vw); line-height:1; color:var(--ink);
-    font-weight:600;
     user-select:none;
   }
-
-  .gloss{
-    text-align:center; font-size:13px; color:var(--ink-soft); min-height:18px;
-    margin-top:-6px; letter-spacing:.02em;
-  }
-  .say{
-    background:none; border:0; padding:0 0 0 6px; cursor:pointer; font:inherit;
-    color:var(--rule); font-size:13px;
-  }
-  .say[disabled]{ display:none; }
 
   /* the red teacher's circle */
   .maru{ position:absolute; inset:0; z-index:3; pointer-events:none; }
@@ -254,7 +235,7 @@
   }
   .set-btn:hover{ border-color:var(--rule); }
   .set-btn[aria-pressed="true"]{ background:var(--rule); border-color:var(--rule); color:var(--on-rule); }
-  .set-btn .jp{ font-family:"Noto Serif KR","AppleMyungjo","Batang","바탕",serif; font-size:14px; }
+  .set-btn .jp{ font-family:"Hiragino Mincho ProN","Yu Mincho",serif; font-size:14px; }
   .set-btn .n{ opacity:.7; font-variant-numeric:tabular-nums; }
 
   .stats{
@@ -273,7 +254,7 @@
   .link:hover{ color:var(--ink); border-color:var(--rule); }
   .link.danger:hover{ color:var(--shu); border-color:var(--shu); }
 
-  /* 낮 / 자 / 밤 — day, automatic (자동), night */
+  /* 日 / 自 / 月 — sun, self-acting, moon */
   .theme-switch{
     margin-left:auto; display:flex; border:1px solid var(--rule-faint);
     border-radius:2px; overflow:hidden;
@@ -282,7 +263,7 @@
     font:inherit; cursor:pointer; background:transparent; border:0;
     border-left:1px solid var(--rule-faint);
     padding:4px 10px; color:var(--ink-soft);
-    font-family:"Noto Serif KR","AppleMyungjo","Batang","바탕",serif; font-size:14px; line-height:1.3;
+    font-family:"Hiragino Mincho ProN","Yu Mincho",serif; font-size:14px; line-height:1.3;
     transition:background-color .15s ease, color .15s ease;
   }
   .theme-switch button:first-child{ border-left:0; }
@@ -304,9 +285,9 @@
   .grid{ display:none; grid-template-columns:repeat(auto-fill,minmax(46px,1fr)); gap:5px; }
   .grid.open{ display:grid; }
   .g-cell{
-    position:relative; aspect-ratio:1; display:grid; place-items:center; cursor:default;
+    position:relative; aspect-ratio:1; display:grid; place-items:center;
     border:1px solid var(--rule-faint); background:var(--cell);
-    font-family:"Noto Serif KR","AppleMyungjo","Batang","바탕",serif; font-size:20px;
+    font-family:"Hiragino Mincho ProN","Yu Mincho",serif; font-size:20px;
   }
   .g-cell .n{
     position:absolute; bottom:1px; right:3px; font-family:ui-monospace,monospace;
@@ -319,11 +300,11 @@
   .g-cell.done .n{ display:none; }
   .g-cell.zero{ color:var(--ink-soft); opacity:.5; }
 
-  .hidden, [hidden]{ display:none !important; }
+  .hidden{ display:none !important; }
 
   .done-state{ text-align:center; padding:20px 0; }
   .done-state .big{
-    font-family:"Noto Serif KR","AppleMyungjo","Batang","바탕",serif; font-size:76px; color:var(--shu);
+    font-family:"Hiragino Mincho ProN","Yu Mincho",serif; font-size:76px; color:var(--shu);
   }
   .done-state p{ font-size:13px; color:var(--ink-soft); margin:6px 0 0; }
 
@@ -336,13 +317,13 @@
 <div class="sheet">
 
   <div class="masthead">
-    <span class="title">한글 연습장</span>
-    <span class="eyebrow" id="retired-count">0 / 24 retired</span>
+    <span class="title">ひらがな練習帳</span>
+    <span class="eyebrow" id="retired-count">0 / 46 retired</span>
   </div>
 
   <div class="today" id="today">
     <div class="today-head">
-      <span class="jp">오늘의 몫</span>
+      <span class="jp">今日の分</span>
       <span class="num" id="today-num">0 / 20</span>
     </div>
     <div class="today-bar"><i id="today-fill"></i></div>
@@ -351,15 +332,13 @@
   <div id="drill">
     <div class="cell-wrap">
       <div class="cell" id="cell">
-        <div class="glyph" id="glyph">가</div>
+        <div class="kana" id="kana">あ</div>
         <svg class="maru" id="maru" viewBox="0 0 100 100" aria-hidden="true">
           <path pathLength="100" d="M54,8 C28,8 8,27 8,50 C8,73 27,92 51,92 C76,92 92,72 92,48 C92,26 76,9 55,8 C47,7.6 42,9.5 37,13"/>
         </svg>
         <div class="correction" id="correction"></div>
       </div>
     </div>
-
-    <div class="gloss" id="gloss"></div>
 
     <div class="tally-row">
       <div class="tally" id="tally"></div>
@@ -369,13 +348,13 @@
     <div class="answer-line">
       <input class="answer" id="answer" type="text" placeholder="type the reading"
              autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-             aria-label="Romanized reading">
+             aria-label="Romaji reading">
       <div class="hint" id="hint">Enter to check</div>
     </div>
   </div>
 
   <div id="finished" class="done-state hidden">
-    <div class="big">끝</div>
+    <div class="big">完</div>
     <p id="finished-msg">Every character in this set is retired.</p>
   </div>
 
@@ -399,12 +378,11 @@
     <div class="actions">
       <button class="link" id="toggle-grid">Show sheet</button>
       <button class="link" id="export">Download progress.json</button>
-      <button class="link" id="sound">Sound on</button>
       <button class="link danger" id="reset">Reset progress</button>
       <div class="theme-switch" id="theme-switch" role="group" aria-label="Colour theme">
-        <button data-theme-pref="light" aria-label="Light" title="Light — 낮">낮</button>
-        <button data-theme-pref="auto"  aria-label="Match system" title="Match system — 자동">자</button>
-        <button data-theme-pref="dark"  aria-label="Dark" title="Dark — 밤">밤</button>
+        <button data-theme-pref="light" aria-label="Light" title="Light">日</button>
+        <button data-theme-pref="auto"  aria-label="Match system" title="Match system">自</button>
+        <button data-theme-pref="dark"  aria-label="Dark" title="Dark">月</button>
       </div>
     </div>
     <div class="grid" id="grid"></div>
@@ -416,91 +394,47 @@
 "use strict";
 
 /* ------------------------------------------------------------------ data */
-/* Each entry: [character, accepted readings, shown reading].
-   Readings follow the Revised Romanization of Korean. A consonant has two:
-   how it sounds starting a syllable and how it sounds as a final (받침),
-   so ㄱ takes "g" or "k". The shown reading is what the correction prints. */
-const L  = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
-const LR = ["g","kk","n","d","tt","r","m","b","pp","s","ss","","j","jj","ch","k","t","p","h"];
-const V  = ["ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅗ","ㅘ","ㅙ","ㅚ","ㅛ","ㅜ","ㅝ","ㅞ","ㅟ","ㅠ","ㅡ","ㅢ","ㅣ"];
-const VR = ["a","ae","ya","yae","eo","e","yeo","ye","o","wa","wae","oe","yo","u","wo","we","wi","yu","eu","ui","i"];
-const BASIC_V = ["ㅏ","ㅑ","ㅓ","ㅕ","ㅗ","ㅛ","ㅜ","ㅠ","ㅡ","ㅣ"];
-const COMPOUND_V = ["ㅐ","ㅒ","ㅔ","ㅖ","ㅘ","ㅙ","ㅚ","ㅝ","ㅞ","ㅟ","ㅢ"];
-const BASIC_C = ["ㄱ","ㄴ","ㄷ","ㄹ","ㅁ","ㅂ","ㅅ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
-const TENSE_C = ["ㄲ","ㄸ","ㅃ","ㅆ","ㅉ"];
-
-// 0xAC00 + (initial × 21 + vowel) × 28 + final: how Unicode lays out every block
-function block(c, v){ return String.fromCharCode(0xAC00 + (L.indexOf(c) * 21 + V.indexOf(v)) * 28); }
-
-function vowel(v){ const r = VR[V.indexOf(v)]; return [v, v === "ㅢ" ? [r, "eui"] : [r], r]; }
-
-const CONSONANT = {
-  "ㄱ":["g","k"], "ㄴ":["n"], "ㄷ":["d","t"], "ㄹ":["r","l"], "ㅁ":["m"], "ㅂ":["b","p"],
-  "ㅅ":["s","t"], "ㅇ":["silent","ng"], "ㅈ":["j","t"], "ㅊ":["ch","t"], "ㅋ":["k"],
-  "ㅌ":["t"], "ㅍ":["p"], "ㅎ":["h","t"],
-  "ㄲ":["kk","k"], "ㄸ":["tt"], "ㅃ":["pp"], "ㅆ":["ss","t"], "ㅉ":["jj"]
-};
-function consonant(c){
-  const r = CONSONANT[c];
-  const ok = r.concat(r.length > 1 ? [r.join("")] : []).concat(c === "ㅇ" ? ["none"] : []);
-  return [c, ok, r.join(" / ")];
-}
-
-function syllables(cons){
-  const out = [];
-  cons.forEach(function(c){
-    BASIC_V.forEach(function(v){
-      const r = LR[L.indexOf(c)] + VR[V.indexOf(v)];
-      const alt = c === "ㄹ" ? ["l" + r.slice(1)] : (r === "si" ? ["shi"] : (r === "ssi" ? ["sshi"] : []));
-      out.push([block(c, v), [r].concat(alt), r]);
-    });
-  });
-  return out;
-}
-
-// one-syllable words with a final consonant; the meaning shows under the cell
-const WORDS = [
-  ["밥","bap","rice, a meal"],["물","mul","water"],["산","san","mountain"],["집","jip","house"],
-  ["책","chaek","book"],["문","mun","door"],["공","gong","ball"],["옷","ot","clothes"],
-  ["꽃","kkot","flower"],["맛","mat","taste"],["한","han","one; Korea, as in 한국"],["글","geul","writing"],
-  ["말","mal","horse; speech"],["국","guk","soup"],["별","byeol","star"],["몸","mom","body"],
-  ["강","gang","river"],["눈","nun","eye; snow"],["달","dal","moon"],["밤","bam","night; chestnut"],
-  ["빵","ppang","bread"],["곰","gom","bear"],["손","son","hand"],["김","gim","laver seaweed"],
-  ["길","gil","road"],["돈","don","money"],["방","bang","room"],["잠","jam","sleep"]
-];
-const GLOSS = {};
-WORDS.forEach(function(w){ GLOSS[w[0]] = w[2]; });
-
-const DECK = {
-  vowels:     BASIC_V.map(vowel),
-  consonants: BASIC_C.map(consonant),
-  tense:      TENSE_C.map(consonant),
-  compound:   COMPOUND_V.map(vowel),
-  syllables:  syllables(BASIC_C),
-  tensesyl:   syllables(TENSE_C),
-  batchim:    WORDS.map(function(w){ return [w[0], [w[1]], w[1]]; })
+const KANA = {
+  gojuon: [
+    ["あ",["a"]],["い",["i"]],["う",["u"]],["え",["e"]],["お",["o"]],
+    ["か",["ka"]],["き",["ki"]],["く",["ku"]],["け",["ke"]],["こ",["ko"]],
+    ["さ",["sa"]],["し",["shi","si"]],["す",["su"]],["せ",["se"]],["そ",["so"]],
+    ["た",["ta"]],["ち",["chi","ti"]],["つ",["tsu","tu"]],["て",["te"]],["と",["to"]],
+    ["な",["na"]],["に",["ni"]],["ぬ",["nu"]],["ね",["ne"]],["の",["no"]],
+    ["は",["ha"]],["ひ",["hi"]],["ふ",["fu","hu"]],["へ",["he"]],["ほ",["ho"]],
+    ["ま",["ma"]],["み",["mi"]],["む",["mu"]],["め",["me"]],["も",["mo"]],
+    ["や",["ya"]],["ゆ",["yu"]],["よ",["yo"]],
+    ["ら",["ra"]],["り",["ri"]],["る",["ru"]],["れ",["re"]],["ろ",["ro"]],
+    ["わ",["wa"]],["を",["wo","o"]],
+    ["ん",["n","nn"]]
+  ],
+  dakuten: [
+    ["が",["ga"]],["ぎ",["gi"]],["ぐ",["gu"]],["げ",["ge"]],["ご",["go"]],
+    ["ざ",["za"]],["じ",["ji","zi"]],["ず",["zu"]],["ぜ",["ze"]],["ぞ",["zo"]],
+    ["だ",["da"]],["ぢ",["ji","di","dzi"]],["づ",["zu","du","dzu"]],["で",["de"]],["ど",["do"]],
+    ["ば",["ba"]],["び",["bi"]],["ぶ",["bu"]],["べ",["be"]],["ぼ",["bo"]],
+    ["ぱ",["pa"]],["ぴ",["pi"]],["ぷ",["pu"]],["ぺ",["pe"]],["ぽ",["po"]]
+  ],
+  yoon: [
+    ["きゃ",["kya"]],["きゅ",["kyu"]],["きょ",["kyo"]],
+    ["しゃ",["sha","sya"]],["しゅ",["shu","syu"]],["しょ",["sho","syo"]],
+    ["ちゃ",["cha","tya"]],["ちゅ",["chu","tyu"]],["ちょ",["cho","tyo"]],
+    ["にゃ",["nya"]],["にゅ",["nyu"]],["にょ",["nyo"]],
+    ["ひゃ",["hya"]],["ひゅ",["hyu"]],["ひょ",["hyo"]],
+    ["みゃ",["mya"]],["みゅ",["myu"]],["みょ",["myo"]],
+    ["りゃ",["rya"]],["りゅ",["ryu"]],["りょ",["ryo"]],
+    ["ぎゃ",["gya"]],["ぎゅ",["gyu"]],["ぎょ",["gyo"]],
+    ["じゃ",["ja","jya","zya"]],["じゅ",["ju","jyu","zyu"]],["じょ",["jo","jyo","zyo"]],
+    ["びゃ",["bya"]],["びゅ",["byu"]],["びょ",["byo"]],
+    ["ぴゃ",["pya"]],["ぴゅ",["pyu"]],["ぴょ",["pyo"]]
+  ]
 };
 
 const SET_META = [
-  { id:"vowels",     jp:"모음",   en:"Vowels" },
-  { id:"consonants", jp:"자음",   en:"Consonants" },
-  { id:"tense",      jp:"쌍자음", en:"Double" },
-  { id:"compound",   jp:"이중모음", en:"Compound vowels" },
-  { id:"syllables",  jp:"가나다", en:"Syllables" },
-  { id:"tensesyl",   jp:"까따빠", en:"Double syllables" },
-  { id:"batchim",    jp:"받침",   en:"Words" }
+  { id:"gojuon",  jp:"五十音", en:"Basic" },
+  { id:"dakuten", jp:"濁音",   en:"Dakuten" },
+  { id:"yoon",    jp:"拗音",   en:"Combos" }
 ];
-
-/* What each card says aloud, when the device has a Korean voice. A lone
-   consonant is read by its name (기역), a lone vowel with the silent ㅇ (아). */
-const NAMES = {"ㄱ":"기역","ㄴ":"니은","ㄷ":"디귿","ㄹ":"리을","ㅁ":"미음","ㅂ":"비읍","ㅅ":"시옷",
-  "ㅇ":"이응","ㅈ":"지읒","ㅊ":"치읓","ㅋ":"키읔","ㅌ":"티읕","ㅍ":"피읖","ㅎ":"히읗",
-  "ㄲ":"쌍기역","ㄸ":"쌍디귿","ㅃ":"쌍비읍","ㅆ":"쌍시옷","ㅉ":"쌍지읒"};
-function spoken(k){
-  if(NAMES[k]) return NAMES[k];
-  if(V.indexOf(k) !== -1) return block("ㅇ", k);
-  return k;
-}
 
 const TARGET = 10;   // correct answers needed to retire a character
 
@@ -511,7 +445,7 @@ const TARGET = 10;   // correct answers needed to retire a character
    local    — the browser's own storage, when opened as a bare file
    memory   — nothing persists; the page says so out loud                 */
 const Store = (function(){
-  const KEY = "hangul-drill-v1";
+  const KEY = "hiragana-drill-v1";
   let mode = "memory";
 
   async function init(){
@@ -585,7 +519,7 @@ const Store = (function(){
 let state = {
   version: 1,
   counts: {},
-  sets: { vowels:true, consonants:true, tense:false, compound:false, syllables:false, tensesyl:false, batchim:false },
+  sets: { gojuon:true, dakuten:false, yoon:false },
   daily: { goal:20, log:{} }     // log is { "2026-10-01": attempts }
 };
 let session = { total:0, correct:0, streak:0 };
@@ -640,7 +574,7 @@ function save(){
 /* ----------------------------------------------------------------- logic */
 function activeList(){
   let out = [];
-  SET_META.forEach(function(m){ if(state.sets[m.id]) out = out.concat(DECK[m.id]); });
+  SET_META.forEach(function(m){ if(state.sets[m.id]) out = out.concat(KANA[m.id]); });
   return out;
 }
 function countOf(k){ return state.counts[k] || 0; }
@@ -665,7 +599,7 @@ function pickNext(){
 }
 
 function normalize(s){
-  return s.toLowerCase().trim().replace(/[\s\-'’_\/.]/g, "");
+  return s.toLowerCase().trim().replace(/[\s\-'’_]/g, "");
 }
 
 function submit(){
@@ -677,7 +611,7 @@ function submit(){
 
   session.total++;
   const k = current[0];
-  const ok = current[1].some(function(r){ return normalize(r) === given; });
+  const ok = current[1].some(function(r){ return r === given; });
 
   /* Attempts count, not correct answers. A quota you can only fill by
      performing well is worst on exactly the days this feature is for. */
@@ -695,7 +629,7 @@ function submit(){
     $("maru").classList.add("show");
     renderTally();
     const retired = state.counts[k] === TARGET;
-    $("hint").innerHTML = retired ? "외웠다 — retired from the deck" : "&nbsp;";
+    $("hint").innerHTML = retired ? "覚えた — retired from the deck" : "&nbsp;";
     setTimeout(nextCard, retired ? 1100 : 620);
   } else {
     state.counts[k] = Math.max(0, countOf(k) - 1);
@@ -704,15 +638,14 @@ function submit(){
     awaiting = true;
     $("cell").classList.add("wrong","shake");
     setTimeout(function(){ $("cell").classList.remove("shake"); }, 320);
-    $("correction").textContent = "→ " + current[2];
+    $("correction").textContent = "→ " + current[1][0];
     $("correction").classList.add("show");
-    $("hint").innerHTML = k + " = <b>" + current[2] + "</b> &nbsp;·&nbsp; Enter to continue";
+    $("hint").innerHTML = k + " = <b>" + current[1][0] + "</b> &nbsp;·&nbsp; Enter to continue";
     input.value = "";
-    Voice.say(spoken(k));
     renderTally();
   }
   save();
-  if(justMet) pendingNote = "오늘 몫 끝 — that's today's. Stop here, or keep going.";
+  if(justMet) pendingNote = "今日の分 — that's today's. Stop here, or keep going.";
   renderToday();
   renderWeek();
   renderStats();
@@ -769,7 +702,7 @@ function renderSets(){
   const wrap = $("sets");
   wrap.innerHTML = "";
   SET_META.forEach(function(m){
-    const list = DECK[m.id];
+    const list = KANA[m.id];
     const done = list.filter(function(e){ return countOf(e[0]) === TARGET; }).length;
     const b = document.createElement("button");
     b.className = "set-btn";
@@ -797,7 +730,7 @@ function renderGrid(){
     const n = countOf(e[0]);
     const d = document.createElement("div");
     d.className = "g-cell" + (n === TARGET ? " done" : (n === 0 ? " zero" : ""));
-    d.title = e[0] + " = " + e[2] + (GLOSS[e[0]] ? " — " + GLOSS[e[0]] : "") + "  ·  " + n + "/" + TARGET;
+    d.title = e[0] + " = " + e[1][0] + "  ·  " + n + "/" + TARGET;
     d.innerHTML = e[0] + (n === TARGET
       ? '<span class="ring"></span>' : '<span class="n">' + n + '</span>');
     g.appendChild(d);
@@ -824,7 +757,7 @@ function renderToday(){
 /* Seven cells ending today. A streak number has a cliff to fall off, which
    punishes the low-energy day this whole feature exists to accommodate;
    a strip of days just shows what happened. */
-const WEEKDAY_JP = ["일","월","화","수","목","금","토"];
+const WEEKDAY_JP = ["日","月","火","水","木","金","土"];
 
 function renderWeek(){
   const wrap = $("week");
@@ -867,12 +800,7 @@ function render(){
   const finished = !current;
   $("drill").classList.toggle("hidden", finished);
   $("finished").classList.toggle("hidden", !finished);
-  if(!finished){
-    $("glyph").textContent = current[0];
-    $("gloss").innerHTML = (GLOSS[current[0]] ? GLOSS[current[0]] : "&nbsp;") +
-      '<button class="say" id="say" type="button" title="Hear it"' + (Voice.ready() ? "" : " disabled") + '>▶ hear</button>';
-    renderTally();
-  }
+  if(!finished){ $("kana").textContent = current[0]; renderTally(); }
   else {
     $("finished-msg").textContent = SET_META.every(function(m){ return state.sets[m.id]; })
       ? "Every character is retired. Nothing left to drill."
@@ -915,59 +843,15 @@ window.addEventListener("pagehide", function(){
   Store.flush(payload());
 });
 
-/* ----------------------------------------------------------------- voice */
-/* The browser's own text-to-speech. It only works when the computer has a
-   Korean voice installed (Windows: Settings → Time & language → Speech);
-   without one the ▶ button simply doesn't appear. */
-const Voice = (function(){
-  const KEY = "hangul-sound";
-  const ok = "speechSynthesis" in window;
-  let voice = null, on = true;
-  try{ on = localStorage.getItem(KEY) !== "off"; }catch(e){}
-  function pick(){
-    if(!ok) return;
-    voice = speechSynthesis.getVoices().find(function(v){ return /^ko/i.test(v.lang); }) || null;
-    label();
-    if(current) render();
-  }
-  function label(){
-    const b = $("sound");
-    b.hidden = !voice;
-    b.textContent = on ? "Sound on" : "Sound off";
-  }
-  function say(text, force){
-    if(!ok || !voice || !text || (!on && !force)) return;
-    try{
-      speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.voice = voice; u.lang = voice.lang; u.rate = 0.8;
-      speechSynthesis.speak(u);
-    }catch(e){}
-  }
-  function toggle(){
-    on = !on;
-    try{ localStorage.setItem(KEY, on ? "on" : "off"); }catch(e){}
-    label();
-  }
-  if(ok){ speechSynthesis.onvoiceschanged = pick; }
-  return { pick: pick, say: say, toggle: toggle, ready: function(){ return !!voice; } };
-})();
-
-$("sound").onclick = function(){ Voice.toggle(); $("answer").focus(); };
-$("gloss").addEventListener("click", function(e){
-  if(e.target.id === "say" && current) Voice.say(spoken(current[0]), true);
-});
-
 /* ----------------------------------------------------------------- theme */
 const Theme = (function(){
-  const KEY = "hangul-theme";
+  const KEY = "hiragana-theme";
   const query = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
   let pref = "auto";
   try{ pref = localStorage.getItem(KEY) || "auto"; }catch(e){}
 
   function apply(){
-    const host = window.__hostTheme;
-    const dark = pref === "dark" || (pref === "auto" && (host ? host === "dark" : (query && query.matches)));
+    const dark = pref === "dark" || (pref === "auto" && query && query.matches);
     document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
     const buttons = $("theme-switch").querySelectorAll("button");
     for(let i = 0; i < buttons.length; i++){
@@ -1038,8 +922,6 @@ $("reset").onclick = function(){
       if(saved.daily.log) state.daily.log = saved.daily.log;
     }
   }
-  if(window.top !== window) $("export").hidden = true;
-  Voice.pick();
   const label = Store.label;
   $("save-note").textContent = label[0];
   $("save-note").classList.toggle("warn", label[1]);
