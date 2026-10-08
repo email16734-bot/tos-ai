@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_Слой_1" data-name="Слой_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 338 276">
+  <!-- Generator: Adobe Illustrator 29.0.0, SVG Export Plug-In . SVG Version: 2.1.0 Build 186)  -->
+  <defs>
+    <style>
+      .st0 {
+        stroke-width: 5px;
+      }
+
+      .st0, .st1 {
+        fill: none;
+        stroke: #fff;
+        stroke-linecap: round;
+      }
+
+      .st2, .st3, .st4, .st5 {
+        opacity: .8;
+      }
+
+      .st6 {
+        fill: #344154;
+      }
+
+      .st7, .st8 {
+        fill: #fff;
+      }
+
+      .st8 {
+        opacity: .5;
+      }
+
+      .st3 {
+        fill: #ffb96a;
+      }
+
+      .st4 {
+        fill: #c87936;
+      }
+
+      .st1 {
+        stroke-width: 2px;
+      }
+
+      .st5 {
+        fill: #e99a50;
+      }
+
+      .st9 {
+        fill: #141b26;
+        opacity: .4;
+      }
+
+      .st10 {
+        fill: #465469;
+      }
+    </style>
+  </defs>
+  <path class="st6" d="M166,76c-39-26-88-35-143-29C9,49,0,61,0,76v149c0,12,10,21,23,20,55-6,104,4,143,31V76Z"/>
+  <path class="st6" d="M166,76c39-26,88-35,143-29,14,2,23,14,23,29v149c0,12-10,21-23,20-55-6-104,4-143,31V76Z"/>
+  <path class="st9" d="M166,76l-4.5,9.4v178.6l4.5,12,4.5-12V85.4l-4.5-9.4Z"/>
+  <path class="st10" d="M20,73c47-6,94,2,128,24v146c-36-18-79-25-128-19V73Z"/>
+  <path class="st10" d="M312,73c-47-6-94,2-128,24v146c36-18,79-25,128-19V73Z"/>
+  <g>
+    <path class="st0" d="M37,108c37-4,71,2,97,15"/>
+    <path class="st0" d="M37,132c37-4,71,2,97,15"/>
+    <path class="st0" d="M37,156c36-3,69,2,97,15"/>
+    <path class="st0" d="M295,108c-37-4-71,2-97,15"/>
+    <path class="st0" d="M295,132c-37-4-71,2-97,15"/>
+    <path class="st0" d="M295,156c-36-3-69,2-97,15"/>
+  </g>
+  <path class="st3" d="M231,27L279,0l48,27-48,28-48-28Z"/>
+  <path class="st5" d="M231,27l48,28v54l-48-28V27Z"/>
+  <path class="st4" d="M279,55l48-28v54l-48,28v-54Z"/>
+  <path class="st8" d="M258,35l21-12,21,12-21,12-21-12Z"/>
+  <path class="st8" d="M258,35v23.1l21,12v-23.1l-21-12Z"/>
+  <path class="st8" d="M279,47v23.1l21-12v-23.1l-21,12Z"/>
+  <circle class="st7" cx="312" cy="32.3" r="7"/>
+  <circle class="st7" cx="334" cy="44" r="4"/>
+  <circle class="st7" cx="299" cy="11" r="4"/>
+  <g class="st2">
+    <path class="st1" d="M312,32.6l22,11.4"/>
+    <path class="st1" d="M312,32.6l-13-21.6"/>
+  </g>
+</svg>
