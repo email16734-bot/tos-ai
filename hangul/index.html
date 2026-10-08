@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hangul Drill</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one column workbench — set picker on top, then a tabbed stage (Chart / Quiz / Build) built around a 원고지 manuscript-grid card */
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#131A2C; --muted:#5B6479; --line:#D8DEE8;
+  --accent:#1F3FA0; --accent-soft:#E4EAFA; --on-accent:#FFFFFF;
+  --good:#1D7A4E; --good-soft:#DDF1E6; --bad:#B3322A; --bad-soft:#F8E1DE; --warn:#A86D12;
+  --grid:#C9D3EA;
+  --display:"Noto Serif KR","Nanum Myeongjo",serif;
+  --body:"IBM Plex Sans KR","IBM Plex Sans",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0D1120; --surface:#151B2D; --ink:#E7EBF5; --muted:#99A2B8; --line:#283049;
+  --accent:#90A8FF; --accent-soft:#1D2648; --on-accent:#0D1120;
+  --good:#5CC690; --good-soft:#163527; --bad:#FF8074; --bad-soft:#3C1D1C; --warn:#E9B24E;
+  --grid:#2C3760; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0D1120; --surface:#151B2D; --ink:#E7EBF5; --muted:#99A2B8; --line:#283049;
+  --accent:#90A8FF; --accent-soft:#1D2648; --on-accent:#0D1120;
+  --good:#5CC690; --good-soft:#163527; --bad:#FF8074; --bad-soft:#3C1D1C; --warn:#E9B24E;
+  --grid:#2C3760; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;margin:0}
+.wrap{max-width:980px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:grid;gap:20px}
+h1,h2,h3{text-wrap:balance;margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.label{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+/* header */
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+.brand{display:flex;align-items:center;gap:14px}
+.brand .seal{font-family:var(--display);font-weight:900;font-size:30px;line-height:1;width:54px;height:54px;display:grid;place-items:center;border:2px solid var(--accent);color:var(--accent);border-radius:6px}
+.brand h1{font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:-.01em}
+.brand p{margin:2px 0 0;color:var(--muted);font-size:13.5px}
+.overall{display:flex;gap:18px;align-items:center;font-variant-numeric:tabular-nums}
+.overall b{font-size:20px;display:block;line-height:1.1}
+.overall span{font-size:12px;color:var(--muted)}
+
+/* set picker */
+.sets{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+.set{display:grid;gap:6px;text-align:left;padding:10px 12px;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);transition:border-color .15s,background .15s}
+.set .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.set .nm{font-weight:600;font-size:14px}
+.set .ex{font-family:var(--display);font-size:15px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.set .ct{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{height:4px;background:var(--line);border-radius:4px;overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.bar .m{background:var(--good)} .bar .l{background:var(--accent);opacity:.55}
+.set[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.set[aria-pressed="true"] .nm::before{content:"✓ ";color:var(--accent)}
+
+/* tabs */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
+.tab{background:none;border:0;padding:10px 14px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tab small{font-family:var(--display);font-weight:400;margin-left:6px}
+.panel{display:grid;gap:18px}
+
+/* controls */
+.controls{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:2px;background:var(--surface)}
+.seg button{border:0;background:none;padding:5px 12px;border-radius:999px;font-size:13px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.chk{display:inline-flex;gap:6px;align-items:center;font-size:13px;color:var(--muted)}
+
+/* stage */
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:18px;align-items:start}
+@media (max-width:720px){.stage{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:18px;justify-items:center}
+.wongoji{width:min(220px,62vw);aspect-ratio:1;max-width:100%;position:relative;border:2px solid var(--grid);border-radius:4px;display:grid;place-items:center;
+  background:
+    linear-gradient(var(--grid),var(--grid)) center/1px 100% no-repeat,
+    linear-gradient(var(--grid),var(--grid)) center/100% 1px no-repeat;
+}
+.wongoji::before,.wongoji::after{content:"";position:absolute;inset:0;background:linear-gradient(45deg,transparent calc(50% - .5px),var(--grid) 50%,transparent calc(50% + .5px));opacity:.35;pointer-events:none}
+.wongoji::after{transform:scaleX(-1)}
+.glyph{font-family:var(--display);font-weight:700;font-size:min(130px,36vw);line-height:1;position:relative;z-index:1}
+.glyph.rom{font-family:var(--mono);font-weight:500;font-size:min(58px,15vw)}
+.prompt-meta{display:flex;gap:10px;align-items:center;color:var(--muted);font-size:13px;min-height:22px}
+.speak{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:13px;display:inline-flex;gap:6px;align-items:center}
+.speak:disabled{opacity:.45;cursor:not-allowed}
+.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%;max-width:440px}
+.choice{border:1px solid var(--line);background:var(--bg);border-radius:var(--r);padding:12px 10px;display:flex;align-items:center;justify-content:center;gap:10px;min-height:62px;position:relative;transition:transform .08s}
+.choice:active{transform:scale(.98)}
+.choice .k{position:absolute;left:9px;top:7px;font-size:10.5px;color:var(--muted);font-family:var(--mono)}
+.choice .t{font-family:var(--mono);font-size:19px}
+.choice .t.h{font-family:var(--display);font-size:32px;font-weight:700}
+.choice.ok{border-color:var(--good);background:var(--good-soft)}
+.choice.no{border-color:var(--bad);background:var(--bad-soft)}
+.choice:disabled{cursor:default}
+.typed{display:flex;gap:8px;width:100%;max-width:440px}
+.typed input{flex:1;min-width:0;font-family:var(--mono);font-size:20px;padding:10px 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--bg);color:var(--ink)}
+.typed input.ok{border-color:var(--good);background:var(--good-soft)} .typed input.no{border-color:var(--bad);background:var(--bad-soft)}
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--on-accent);border-radius:var(--r);padding:10px 16px;font-weight:600}
+.btn.ghost{background:none;color:var(--accent)}
+.feedback{min-height:48px;text-align:center;font-size:14px;display:grid;gap:4px;justify-items:center}
+.feedback .v{font-weight:600}
+.feedback .v.ok{color:var(--good)} .feedback .v.no{color:var(--bad)}
+.feedback .d{color:var(--muted)}
+.feedback .d b{font-family:var(--display);color:var(--ink)}
+.side{display:grid;gap:12px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:10px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;font-variant-numeric:tabular-nums}
+.stats b{display:block;font-size:22px;line-height:1.1}
+.stats span{font-size:11.5px;color:var(--muted)}
+.recent{display:flex;flex-wrap:wrap;gap:4px}
+.recent i{font-style:normal;font-family:var(--display);font-size:15px;width:30px;height:30px;display:grid;place-items:center;border-radius:6px}
+.recent .ok{background:var(--good-soft);color:var(--good)} .recent .no{background:var(--bad-soft);color:var(--bad)}
+.hint{font-size:12.5px;color:var(--muted);margin:0}
+kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 4px;background:var(--bg)}
+
+/* chart */
+.sec{display:grid;gap:10px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.sec-h h3{font-size:17px}
+.sec-h p{margin:0;color:var(--muted);font-size:13px;max-width:60ch}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px}
+.tile{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 6px 7px;display:grid;justify-items:center;gap:1px;position:relative}
+.tile:hover{border-color:var(--accent)}
+.tile .g{font-family:var(--display);font-size:30px;font-weight:700;line-height:1.15}
+.tile .r{font-family:var(--mono);font-size:12.5px}
+.tile .n{font-size:11px;color:var(--muted);font-family:var(--display)}
+.dot{position:absolute;right:6px;top:6px;width:7px;height:7px;border-radius:50%;background:var(--line)}
+.dot.l{background:var(--accent);opacity:.7} .dot.m{background:var(--good)} .dot.w{background:var(--bad)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);align-items:center}
+.legend .dot{position:static;display:inline-block;margin-right:5px;vertical-align:middle}
+.gridwrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table.syl{border-collapse:collapse;font-variant-numeric:tabular-nums}
+table.syl th{font-family:var(--display);font-size:18px;padding:6px 4px;color:var(--accent);background:var(--bg);position:sticky;top:0}
+table.syl th small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--muted);font-weight:400}
+table.syl th.rowh{position:sticky;left:0;z-index:1}
+table.syl td{padding:0;border-top:1px solid var(--line)}
+table.syl td button{border:0;background:none;width:58px;height:54px;display:grid;place-items:center;gap:0;position:relative;padding:4px 0}
+table.syl td button:hover{background:var(--accent-soft)}
+table.syl td .g{font-family:var(--display);font-size:22px;font-weight:700;line-height:1.1}
+table.syl td .r{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+table.syl td .dot{right:4px;top:4px;width:5px;height:5px}
+.explain{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.explain .box p{margin:0;font-size:13.5px;color:var(--muted)}
+.explain .box h4{margin:0;font-size:14px}
+.explain .box .big{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:.06em}
+
+/* build */
+.compose{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+.slot{display:grid;justify-items:center;gap:4px;font-size:11.5px;color:var(--muted)}
+.slot b{font-family:var(--display);font-size:30px;width:52px;height:52px;display:grid;place-items:center;border:1px dashed var(--grid);border-radius:8px;color:var(--ink)}
+.slot b.set{border-style:solid;border-color:var(--accent)}
+.plus{color:var(--muted);font-size:20px}
+.picker{display:grid;gap:8px;width:100%}
+.keys{display:flex;flex-wrap:wrap;gap:5px}
+.key{font-family:var(--display);font-size:20px;font-weight:700;min-width:42px;height:42px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:0 6px}
+.key[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.key.none{font-family:var(--body);font-size:12px;font-weight:500}
+.reset{justify-self:start;font-size:12.5px;background:none;border:0;color:var(--muted);text-decoration:underline;padding:0}
+.reset.armed{color:var(--bad);font-weight:600}
+footer{color:var(--muted);font-size:12.5px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@keyframes pop{from{transform:scale(.92);opacity:.4}to{transform:none;opacity:1}}
+.glyph.in{animation:pop .18s ease-out}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="seal" aria-hidden="true">한</div>
+      <div>
+        <h1>Hangul Drill</h1>
+        <p>Learn the Korean alphabet: letters, then syllable blocks.</p>
+      </div>
+    </div>
+    <div class="overall" id="overall"></div>
+  </header>
+
+  <section class="sec" aria-labelledby="sets-h">
+    <div class="sec-h"><span class="label" id="sets-h">Practice sets — tap to include</span></div>
+    <div class="sets" id="sets"></div>
+  </section>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-quiz" data-tab="quiz">Quiz<small>퀴즈</small></button>
+    <button class="tab" role="tab" id="tab-chart" data-tab="chart">Chart<small>표</small></button>
+    <button class="tab" role="tab" id="tab-build" data-tab="build">Build blocks<small>조합</small></button>
+  </nav>
+
+  <!-- QUIZ -->
+  <section class="panel" id="p-quiz" role="tabpanel">
+    <div class="controls">
+      <div class="seg" id="dir">
+        <button data-v="h2r">한 → abc</button><button data-v="r2h">abc → 한</button><button data-v="mix">Mixed</button>
+      </div>
+      <div class="seg" id="ans">
+        <button data-v="choice">Choose</button><button data-v="type">Type</button>
+      </div>
+      <label class="chk"><input type="checkbox" id="autoplay"> Play sound</label>
+    </div>
+    <div class="stage">
+      <div class="card">
+        <div class="wongoji"><div class="glyph" id="q-glyph"></div></div>
+        <div class="prompt-meta" id="q-meta"></div>
+        <div class="choices" id="q-choices"></div>
+        <form class="typed" id="q-typed" hidden autocomplete="off">
+          <input id="q-input" placeholder="romanization, e.g. ga" autocapitalize="off" spellcheck="false" aria-label="Your answer">
+          <button class="btn" type="submit" id="q-submit">Check</button>
+        </form>
+        <div class="feedback" id="q-fb" aria-live="polite"></div>
+      </div>
+      <aside class="side">
+        <div class="box">
+          <div class="label">This session</div>
+          <div class="stats" id="q-stats"></div>
+          <div class="recent" id="q-recent"></div>
+        </div>
+        <div class="box">
+          <div class="label">How it picks</div>
+          <p class="hint">Letters you miss come back sooner. Each correct answer moves a letter up one of 5 levels; a miss drops it to level 0. Level 4+ counts as learned.</p>
+          <p class="hint"><kbd>1</kbd>–<kbd>4</kbd> choose · <kbd>Enter</kbd> next · <kbd>Space</kbd> sound</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- CHART -->
+  <section class="panel" id="p-chart" role="tabpanel" hidden>
+    <div class="legend">
+      <span><i class="dot"></i>not seen</span><span><i class="dot w"></i>missed last time</span><span><i class="dot l"></i>learning</span><span><i class="dot m"></i>learned</span>
+      <span>Tap any letter to hear it.</span>
+    </div>
+    <div id="chart"></div>
+  </section>
+
+  <!-- BUILD -->
+  <section class="panel" id="p-build" role="tabpanel" hidden>
+    <p class="hint" style="font-size:13.5px;max-width:65ch">Every Hangul syllable is one block: an initial consonant, a vowel, and sometimes a final consonant (받침, batchim). A syllable that starts with a vowel sound uses the silent ㅇ. Build the block that matches the sound.</p>
+    <div class="stage">
+      <div class="card">
+        <div class="glyph rom in" id="b-target"></div>
+        <div class="prompt-meta" id="b-meta"></div>
+        <div class="compose">
+          <div class="slot"><b id="b-l"></b>initial</div><span class="plus">+</span>
+          <div class="slot"><b id="b-v"></b>vowel</div><span class="plus">+</span>
+          <div class="slot"><b id="b-t"></b>final</div><span class="plus">=</span>
+          <div class="wongoji" style="width:92px"><div class="glyph" id="b-out" style="font-size:58px"></div></div>
+        </div>
+        <div class="picker">
+          <span class="label">Initial consonant</span><div class="keys" id="b-keys-l"></div>
+          <span class="label">Vowel</span><div class="keys" id="b-keys-v"></div>
+          <span class="label">Final consonant</span><div class="keys" id="b-keys-t"></div>
+        </div>
+        <div style="display:flex;gap:8px"><button class="btn" id="b-check">Check</button><button class="btn ghost" id="b-skip">Skip</button></div>
+        <div class="feedback" id="b-fb" aria-live="polite"></div>
+      </div>
+      <aside class="side">
+        <div class="box">
+          <div class="label">Built this session</div>
+          <div class="stats" id="b-stats"></div>
+          <div class="recent" id="b-recent"></div>
+        </div>
+        <div class="box">
+          <div class="label">Block shapes</div>
+          <p class="hint">Tall vowels (ㅏ ㅓ ㅣ) sit to the right of the consonant: 가. Wide vowels (ㅗ ㅜ ㅡ) sit below it: 고. A final consonant always goes at the bottom: 각, 곡.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <footer>
+    <button class="reset" id="reset">Reset all progress</button>
+    <span>Romanization follows the official Revised Romanization of Korean.</span>
+  </footer>
+</div>
+
+<script>
+(() => {
+"use strict";
+// ---------- data ----------
+const L = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+const L_ROM = ['g','kk','n','d','tt','r','m','b','pp','s','ss','','j','jj','ch','k','t','p','h'];
+const V = ['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'];
+const V_ROM = ['a','ae','ya','yae','eo','e','yeo','ye','o','wa','wae','oe','yo','u','wo','we','wi','yu','eu','ui','i'];
+const T = ['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+const syl = (l, v, t = 0) => String.fromCharCode(0xAC00 + (l * 21 + v) * 28 + t);
+const split = ch => { const c = ch.charCodeAt(0) - 0xAC00; return [Math.floor(c / 588), Math.floor((c % 588) / 28), c % 28]; };
+
+// consonant: glyph, initial, final, name
+const CONS = [['ㄱ','g','k','기역'],['ㄴ','n','n','니은'],['ㄷ','d','t','디귿'],['ㄹ','r','l','리을'],['ㅁ','m','m','미음'],['ㅂ','b','p','비읍'],['ㅅ','s','t','시옷'],['ㅇ','','ng','이응'],['ㅈ','j','t','지읒'],['ㅊ','ch','t','치읓'],['ㅋ','k','k','키읔'],['ㅌ','t','t','티읕'],['ㅍ','p','p','피읖'],['ㅎ','h','t','히읗']];
+const DBL = [['ㄲ','kk','k','쌍기역'],['ㄸ','tt','','쌍디귿'],['ㅃ','pp','','쌍비읍'],['ㅆ','ss','t','쌍시옷'],['ㅉ','jj','','쌍지읒']];
+const VB = ['ㅏ','ㅑ','ㅓ','ㅕ','ㅗ','ㅛ','ㅜ','ㅠ','ㅡ','ㅣ'];
+const VC = ['ㅐ','ㅒ','ㅔ','ㅖ','ㅘ','ㅙ','ㅚ','ㅝ','ㅞ','ㅟ','ㅢ'];
+const V_ALT = {'ㅢ':['eui'],'ㅓ':[],'ㅚ':[]};
+const WORDS = [['밥','bap','rice, meal'],['물','mul','water'],['산','san','mountain'],['집','jip','house'],['책','chaek','book'],['문','mun','door'],['공','gong','ball'],['옷','ot','clothes'],['꽃','kkot','flower'],['맛','mat','taste'],['한','han','one; Korea (한국)'],['글','geul','writing'],['말','mal','horse; speech'],['국','guk','soup'],['별','byeol','star'],['몸','mom','body'],['강','gang','river'],['눈','nun','eye; snow'],['달','dal','moon'],['밤','bam','night; chestnut'],['빵','ppang','bread'],['곰','gom','bear'],['손','son','hand'],['김','gim','laver seaweed'],['길','gil','road'],['돈','don','money'],['방','bang','room'],['잠','jam','sleep']];
+
+const ITEMS = {}; const SETS = [];
+function addSet(id, name, kind, items){ SETS.push({id, name, kind, ids: items.map(i => i.id)}); items.forEach(i => { i.set = id; ITEMS[i.id] = i; }); }
+const consItem = ([g, ini, fin, name]) => ({
+  id:'c'+g, glyph:g, kind:'letter', name,
+  rom: ini ? (fin && fin !== ini ? `${ini} / ${fin}` : ini) : `silent / ${fin}`,
+  answers: [ini, fin, ini && fin ? `${ini}/${fin}` : null, !ini ? '-' : null, !ini ? 'silent' : null].filter(Boolean),
+  say: name,
+  note: ini ? (fin && fin !== ini ? `“${ini}” at the start of a syllable, “${fin}” at the end` : (fin ? '' : 'never used as a final sound')) : 'silent at the start, “ng” at the end'
+});
+const vowItem = g => { const i = V.indexOf(g); return {id:'v'+g, glyph:g, kind:'letter', rom:V_ROM[i], answers:[V_ROM[i], ...(V_ALT[g]||[])], say:syl(11,i), note:`written with silent ㅇ as ${syl(11,i)}`}; };
+addSet('cons','Consonants','letters', CONS.map(consItem));
+addSet('vow','Vowels','letters', VB.map(vowItem));
+addSet('dbl','Double consonants','letters', DBL.map(consItem));
+addSet('cvow','Compound vowels','letters', VC.map(vowItem));
+const sylItems = (cons) => { const out=[]; cons.forEach(([g]) => VB.forEach(v => { const li=L.indexOf(g), vi=V.indexOf(v); const s=syl(li,vi); const r=L_ROM[li]+V_ROM[vi]; out.push({id:'s'+s, glyph:s, kind:'syl', rom:r, answers:[r], say:s, note:`${g} + ${v}`}); })); return out; };
+addSet('syl','Syllables 가–히','syllables', sylItems(CONS));
+addSet('dsyl','Syllables 까–찌','syllables', sylItems(DBL));
+addSet('words','Batchim words','syllables', WORDS.map(([w,r,m]) => { const [l,v,t]=split(w); return {id:'w'+w, glyph:w, kind:'syl', rom:r, answers:[r], say:w, meaning:m, note:`${L[l]} + ${V[v]} + ${T[t]}`}; }));
+
+// ---------- storage ----------
+const KEY = 'hangul-drill-v1';
+let S = {sets:['cons','vow'], tab:'quiz', dir:'h2r', ans:'choice', autoplay:true, prog:{}};
+try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch(e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} };
+const prog = id => S.prog[id] || {lv:0, seen:0, ok:0, last:null};
+const state = id => { const p = S.prog[id]; if (!p || !p.seen) return ''; if (p.last === false) return 'w'; return p.lv >= 4 ? 'm' : 'l'; };
+function record(id, ok){ const p = Object.assign({lv:0,seen:0,ok:0}, S.prog[id]); p.seen++; if (ok){ p.ok++; p.lv = Math.min(5, p.lv+1); } else p.lv = 0; p.last = ok; p.t = Date.now(); S.prog[id] = p; save(); renderSets(); renderOverall(); }
+
+// ---------- speech ----------
+let koVoice = null; const canSpeak = 'speechSynthesis' in window;
+function pickVoice(){ if (!canSpeak) return; const vs = speechSynthesis.getVoices(); koVoice = vs.find(v => /^ko/i.test(v.lang)) || null; document.querySelectorAll('.speak').forEach(b => b.disabled = !koVoice); }
+if (canSpeak){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+function speak(text){ if (!canSpeak || !koVoice || !text) return; try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.voice = koVoice; u.lang = koVoice.lang; u.rate = .8; speechSynthesis.speak(u); } catch(e) {} }
+const speakBtn = text => `<button class="speak" type="button" data-say="${text}" ${koVoice?'':'disabled title="No Korean voice on this device"'}>▶ Hear</button>`;
+document.addEventListener('click', e => { const b = e.target.closest('[data-say]'); if (b && b.classList.contains('speak')) speak(b.dataset.say); });
+
+// ---------- header / sets ----------
+const $ = id => document.getElementById(id);
+function counts(ids){ let m=0,l=0; ids.forEach(id => { const s = state(id); if (s==='m') m++; else if (s) l++; }); return {m,l,n:ids.length}; }
+function renderOverall(){
+  const letters = SETS.filter(s => s.kind==='letters').flatMap(s => s.ids), sy = SETS.filter(s => s.kind==='syllables').flatMap(s => s.ids);
+  const a = counts(letters), b = counts(sy);
+  $('overall').innerHTML = `<div><b>${a.m}<span> / ${a.n}</span></b><span>letters learned</span></div><div><b>${b.m}<span> / ${b.n}</span></b><span>syllables learned</span></div>`;
+}
+function renderSets(){
+  $('sets').innerHTML = SETS.map(s => { const c = counts(s.ids); const ex = s.ids.slice(0,7).map(id => ITEMS[id].glyph).join(' ');
+    return `<button class="set" data-set="${s.id}" aria-pressed="${S.sets.includes(s.id)}"><span class="top"><span class="nm">${s.name}</span><span class="ct">${c.m}/${c.n}</span></span><span class="ex">${ex}</span><span class="bar"><i class="m" style="width:${c.m/c.n*100}%"></i><i class="l" style="width:${c.l/c.n*100}%"></i></span></button>`; }).join('');
+}
+$('sets').addEventListener('click', e => { const b = e.target.closest('[data-set]'); if (!b) return; const id = b.dataset.set;
+  if (S.sets.includes(id)){ if (S.sets.length === 1) return; S.sets = S.sets.filter(x => x !== id); } else S.sets.push(id);
+  save(); renderSets(); quiz.next(true); build.next(); });
+
+// ---------- tabs & toggles ----------
+function setTab(t){ S.tab = t; save(); document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
+  ['quiz','chart','build'].forEach(x => $('p-'+x).hidden = x !== t); if (t==='chart') renderChart(); }
+document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+function seg(id, key, after){ const el = $(id); const paint = () => el.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === S[key]));
+  el.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S[key] = b.dataset.v; save(); paint(); after(); }); paint(); }
+seg('dir','dir', () => quiz.next(true)); seg('ans','ans', () => quiz.next(true));
+$('autoplay').checked = S.autoplay; $('autoplay').addEventListener('change', e => { S.autoplay = e.target.checked; save(); });
+
+// ---------- picker ----------
+function pool(filter){ return S.sets.flatMap(s => SETS.find(x => x.id===s).ids).filter(id => !filter || filter(ITEMS[id])); }
+function pick(ids, recent){
+  const cands = ids.length > 4 ? ids.filter(id => !recent.includes(id)) : ids.filter(id => id !== recent[recent.length-1]) ;
+  const list = cands.length ? cands : ids; let tot = 0;
+  const w = list.map(id => { const p = prog(id); const x = (p.seen ? (6 - p.lv) ** 2 : 20) ; tot += x; return x; });
+  let r = Math.random() * tot; for (let i=0;i<list.length;i++){ r -= w[i]; if (r <= 0) return list[i]; } return list[list.length-1];
+}
+const shuffle = a => { for (let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const norm = s => s.toLowerCase().replace(/[\s'’.]/g,'');
+
+// ---------- quiz ----------
+const quiz = (() => {
+  let cur = null, dir = 'h2r', done = false, recent = [], sess = {n:0, ok:0, streak:0, best:0}, log = [];
+  function distractors(item){
+    const same = shuffle(pool(i => i.kind === item.kind && i.id !== item.id));
+    const wider = shuffle(Object.keys(ITEMS).filter(id => ITEMS[id].kind === item.kind && ITEMS[id].id !== item.id && !same.includes(id)));
+    const out = [], seenTxt = new Set([item.rom, item.glyph]);
+    for (const id of [...same, ...wider]){ const it = ITEMS[id]; if (seenTxt.has(it.rom) || seenTxt.has(it.glyph)) continue; seenTxt.add(it.rom); seenTxt.add(it.glyph); out.push(it); if (out.length === 3) break; }
+    return out;
+  }
+  function next(reset){
+    const ids = pool(); if (!ids.length) return;
+    const id = pick(ids, recent); recent = [...recent, id].slice(-4); cur = ITEMS[id]; done = false;
+    dir = S.dir === 'mix' ? (Math.random() < .5 ? 'h2r' : 'r2h') : S.dir;
+    const typing = S.ans === 'type' && dir === 'h2r';
+    const g = $('q-glyph'); g.className = 'glyph in' + (dir==='r2h' ? ' rom' : ''); g.textContent = dir === 'h2r' ? cur.glyph : cur.rom; void g.offsetWidth;
+    $('q-meta').innerHTML = (dir==='h2r' ? speakBtn(cur.say) : 'Which one makes this sound?') + (cur.meaning && dir==='r2h' ? ` · “${cur.meaning}”` : '');
+    $('q-fb').innerHTML = '';
+    $('q-typed').hidden = !typing; $('q-choices').hidden = typing;
+    if (typing){ const inp = $('q-input'); inp.value = ''; inp.className = ''; inp.disabled = false; $('q-submit').textContent = 'Check'; inp.focus({preventScroll:true}); }
+    else {
+      const opts = shuffle([cur, ...distractors(cur)]);
+      $('q-choices').innerHTML = opts.map((o,i) => `<button class="choice" data-id="${o.id}"><span class="k">${i+1}</span><span class="t ${dir==='r2h'?'h':''}">${dir==='r2h' ? o.glyph : o.rom}</span></button>`).join('');
+    }
+    if (dir === 'h2r' && S.autoplay && !reset) speak(cur.say);
+    renderStats();
+  }
+  function answer(ok, chosenId){
+    if (done) return; done = true; record(cur.id, ok);
+    sess.n++; if (ok){ sess.ok++; sess.streak++; sess.best = Math.max(sess.best, sess.streak); } else sess.streak = 0;
+    log = [...log, {g:cur.glyph, ok}].slice(-24);
+    document.querySelectorAll('#q-choices .choice').forEach(b => { b.disabled = true; if (b.dataset.id === cur.id) b.classList.add('ok'); else if (b.dataset.id === chosenId) b.classList.add('no'); });
+    const extra = [cur.name ? `name <b>${cur.name}</b>` : '', cur.meaning ? `“${cur.meaning}”` : '', cur.note].filter(Boolean).join(' · ');
+    $('q-fb').innerHTML = `<span class="v ${ok?'ok':'no'}">${ok ? 'Correct' : 'Not quite'} — <b style="font-family:var(--display)">${cur.glyph}</b> is “${cur.rom}”</span>${extra ? `<span class="d">${extra}</span>` : ''}${ok ? '' : '<span class="d">Press Enter or tap Next to continue</span>'}`;
+    if (dir === 'r2h' && S.autoplay) speak(cur.say);
+    if (!ok && !$('q-typed').hidden){ $('q-input').classList.add('no'); }
+    if (ok && !$('q-typed').hidden) $('q-input').classList.add('ok');
+    if (!$('q-typed').hidden){ $('q-submit').textContent = 'Next'; $('q-input').disabled = true; $('q-submit').focus({preventScroll:true}); }
+    else if (!ok) $('q-fb').insertAdjacentHTML('beforeend','<button class="btn ghost" id="q-next" type="button">Next</button>');
+    renderStats();
+    if (ok) setTimeout(() => { if (done && cur) next(); }, 900);
+  }
+  function renderStats(){
+    const pct = sess.n ? Math.round(sess.ok/sess.n*100) + '%' : '—';
+    $('q-stats').innerHTML = `<div><b>${sess.ok}/${sess.n}</b><span>correct</span></div><div><b>${pct}</b><span>accuracy</span></div><div><b>${sess.streak}</b><span>streak (best ${sess.best})</span></div>`;
+    $('q-recent').innerHTML = log.map(x => `<i class="${x.ok?'ok':'no'}">${x.g}</i>`).join('') || '<span class="hint">Your answers will line up here.</span>';
+  }
+  $('q-choices').addEventListener('click', e => { const b = e.target.closest('.choice'); if (b && !done) answer(b.dataset.id === cur.id, b.dataset.id); });
+  $('q-fb').addEventListener('click', e => { if (e.target.id === 'q-next') next(); });
+  $('q-typed').addEventListener('submit', e => { e.preventDefault(); if (done) return next(); const v = norm($('q-input').value); if (!v && !cur.answers.includes('')) return; answer(cur.answers.map(norm).includes(v)); });
+  document.addEventListener('keydown', e => {
+    if (S.tab !== 'quiz' || e.metaKey || e.ctrlKey || e.altKey) return; const typingFocus = document.activeElement === $('q-input');
+    if (!typingFocus && /^[1-4]$/.test(e.key) && !done){ const b = document.querySelectorAll('#q-choices .choice')[+e.key-1]; if (b && !$('q-choices').hidden) b.click(); }
+    else if (e.key === 'Enter' && done && !typingFocus && document.activeElement !== $('q-submit')){ e.preventDefault(); next(); }
+    else if (e.key === ' ' && !typingFocus && document.activeElement.tagName !== 'BUTTON'){ e.preventDefault(); speak(cur && cur.say); }
+  });
+  return {next};
+})();
+
+// ---------- chart ----------
+function tile(id, sub){ const it = ITEMS[id]; return `<button class="tile" data-say="${it.say}" title="${it.note||''}"><i class="dot ${state(id)}"></i><span class="g">${it.glyph}</span><span class="r">${it.rom}</span>${sub ? `<span class="n">${sub}</span>` : ''}</button>`; }
+function renderChart(){
+  const sec = (title, desc, body) => `<div class="sec"><div class="sec-h"><h3>${title}</h3><p>${desc}</p></div>${body}</div>`;
+  const tiles = (setId, sub) => `<div class="tiles">${SETS.find(s=>s.id===setId).ids.map(id => tile(id, sub && sub(ITEMS[id]))).join('')}</div>`;
+  const grid = (cons) => `<div class="gridwrap"><table class="syl"><thead><tr><th class="rowh"></th>${VB.map(v => `<th>${v}<small>${V_ROM[V.indexOf(v)]}</small></th>`).join('')}</tr></thead><tbody>${cons.map(([g]) => `<tr><th class="rowh">${g}<small>${L_ROM[L.indexOf(g)]||'—'}</small></th>${VB.map(v => { const s = syl(L.indexOf(g), V.indexOf(v)); const it = ITEMS['s'+s]; return `<td><button data-say="${s}" title="${it.note}"><i class="dot ${state(it.id)}"></i><span class="g">${s}</span><span class="r">${it.rom}</span></button></td>`; }).join('')}</tr>`).join('')}</tbody></table></div>`;
+  $('chart').innerHTML = [
+    `<div class="explain">
+      <div class="box"><h4>Consonants mirror the mouth</h4><span class="big">ㄱ ㄴ ㅁ ㅅ ㅇ</span><p>The five base shapes draw the tongue, lips, teeth and throat. Add a stroke for a stronger sound: ㄱ→ㅋ, ㄷ→ㅌ, ㅂ→ㅍ, ㅈ→ㅊ.</p></div>
+      <div class="box"><h4>Vowels are heaven, earth, person</h4><span class="big">· ㅡ ㅣ</span><p>Every vowel combines a dot (now a short stroke), a flat line and a standing line. A second stroke adds a “y”: ㅏ a → ㅑ ya.</p></div>
+    </div>`,
+    sec('Basic consonants · 자음', 'Romanization shows start / end of a syllable. Small text is the letter’s Korean name.', tiles('cons', it => it.name)),
+    sec('Basic vowels · 모음', 'Spoken with the silent ㅇ in front, the way they are written on their own.', tiles('vow')),
+    sec('Double consonants · 쌍자음', 'Tense versions of ㄱ ㄷ ㅂ ㅅ ㅈ: say them tight, with no puff of air.', tiles('dbl', it => it.name)),
+    sec('Compound vowels · 이중 모음', 'Built from two vowels. In modern speech ㅐ and ㅔ sound almost the same, and so do ㅙ ㅚ ㅞ.', tiles('cvow')),
+    sec('Syllable chart · 가나다', 'Consonant rows × vowel columns. Scroll sideways on a phone.', grid(CONS)),
+    sec('Double-consonant syllables', '', grid(DBL)),
+    sec('Batchim words · 받침', 'Real one-syllable words with a final consonant. Finals are not released: 밥 ends on a closed “p”.', `<div class="tiles">${SETS.find(s=>s.id==='words').ids.map(id => tile(id, ITEMS[id].meaning)).join('')}</div>`)
+  ].join('');
+}
+
+// ---------- build ----------
+const build = (() => {
+  const LK = ['ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ','ㄲ','ㄸ','ㅃ','ㅆ','ㅉ'];
+  const TK = ['','ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ','ㅇ','ㅊ'];
+  let cur = null, sel = {l:null, v:null, t:''}, recent = [], done = false, sess = {n:0, ok:0}, log = [];
+  const keys = (el, arr, k) => $(el).innerHTML = arr.map(g => `<button class="key ${g?'':'none'}" data-k="${k}" data-g="${g}">${g || 'none'}</button>`).join('');
+  keys('b-keys-l', LK, 'l'); keys('b-keys-v', VB.concat(VC), 'v'); keys('b-keys-t', TK, 't');
+  function paint(){
+    ['l','v','t'].forEach(k => document.querySelectorAll(`.key[data-k="${k}"]`).forEach(b => b.setAttribute('aria-pressed', b.dataset.g === (sel[k] ?? '\u0000'))));
+    $('b-l').textContent = sel.l || ''; $('b-v').textContent = sel.v || ''; $('b-t').textContent = sel.t || '';
+    $('b-l').classList.toggle('set', !!sel.l); $('b-v').classList.toggle('set', !!sel.v); $('b-t').classList.toggle('set', !!sel.t);
+    $('b-out').textContent = sel.l && sel.v ? syl(L.indexOf(sel.l), V.indexOf(sel.v), T.indexOf(sel.t)) : '';
+  }
+  function next(){
+    let ids = pool(i => i.kind === 'syl'); if (!ids.length) ids = SETS.find(s => s.id==='syl').ids;
+    const id = pick(ids, recent); recent = [...recent, id].slice(-4); cur = ITEMS[id]; done = false; sel = {l:null, v:null, t:''};
+    const t = $('b-target'); t.textContent = cur.rom; t.classList.remove('in'); void t.offsetWidth; t.classList.add('in');
+    $('b-meta').innerHTML = speakBtn(cur.say) + (cur.meaning ? ` · “${cur.meaning}”` : '');
+    $('b-fb').innerHTML = ''; $('b-check').textContent = 'Check'; paint(); renderStats();
+  }
+  function check(){
+    if (done) return next(); if (!sel.l || !sel.v){ $('b-fb').innerHTML = '<span class="d">Pick an initial consonant and a vowel first.</span>'; return; }
+    const made = syl(L.indexOf(sel.l), V.indexOf(sel.v), T.indexOf(sel.t)); const ok = made === cur.glyph; done = true;
+    record(cur.id, ok); sess.n++; if (ok) sess.ok++; log = [...log, {g:cur.glyph, ok}].slice(-24);
+    const [l,v,t] = split(cur.glyph);
+    $('b-fb').innerHTML = `<span class="v ${ok?'ok':'no'}">${ok ? 'Correct' : `You built ${made}`} — “${cur.rom}” is <b style="font-family:var(--display);font-size:20px">${cur.glyph}</b></span><span class="d">${L[l]} + ${V[v]}${t ? ' + '+T[t] : ''}</span>`;
+    if (S.autoplay) speak(cur.say); $('b-check').textContent = 'Next'; renderStats();
+  }
+  function renderStats(){
+    $('b-stats').innerHTML = `<div><b>${sess.ok}</b><span>right</span></div><div><b>${sess.n - sess.ok}</b><span>missed</span></div><div><b>${sess.n ? Math.round(sess.ok/sess.n*100)+'%' : '—'}</b><span>accuracy</span></div>`;
+    $('b-recent').innerHTML = log.map(x => `<i class="${x.ok?'ok':'no'}">${x.g}</i>`).join('') || '<span class="hint">Blocks you build will show here.</span>';
+  }
+  document.querySelector('#p-build .picker').addEventListener('click', e => { const b = e.target.closest('.key'); if (!b || done) return; const k = b.dataset.k; sel[k] = (k !== 't' && sel[k] === b.dataset.g) ? null : b.dataset.g; paint(); });
+  $('b-check').addEventListener('click', check); $('b-skip').addEventListener('click', next);
+  return {next};
+})();
+
+// ---------- reset ----------
+let armed = null;
+$('reset').addEventListener('click', () => { const b = $('reset');
+  if (!armed){ b.textContent = 'Tap again to erase all progress'; b.classList.add('armed'); armed = setTimeout(() => { armed = null; b.textContent = 'Reset all progress'; b.classList.remove('armed'); }, 4000); return; }
+  clearTimeout(armed); armed = null; S.prog = {}; save(); b.textContent = 'Progress erased'; b.classList.remove('armed'); renderSets(); renderOverall(); if (S.tab==='chart') renderChart(); });
+
+renderSets(); renderOverall(); quiz.next(true); build.next(); setTab(S.tab);
+})();
+</script>
