@@ -118,6 +118,7 @@ def main():
     except (IndexError, ValueError):
         sys.exit(f"error: could not read the length of {video}")
     video_codec = (probe(video, "stream=codec_name", "v:0") or [""])[0]
+    pixel_format = (probe(video, "stream=pix_fmt", "v:0") or [""])[0]
     video_has_audio = bool(probe(video, "stream=index", "a"))
 
     # Build the audio filter: volume -> optional fade -> optional mix with original.
@@ -140,7 +141,7 @@ def main():
         "-map", "0:v:0", "-map", "[aout]",
         "-t", f"{duration:.3f}",                  # ...and stop at the video's length
     ]
-    if video_codec in COPYABLE_VIDEO:
+    if video_codec in COPYABLE_VIDEO and pixel_format in ("yuv420p", "yuvj420p"):
         cmd += ["-c:v", "copy"]
     else:
         cmd += ["-c:v", "libx264", "-preset", "medium", "-crf", "23", "-pix_fmt", "yuv420p",
